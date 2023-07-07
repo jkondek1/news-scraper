@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 
 import requests
 import validators
+from bs4 import BeautifulSoup
+
+from app.data import Article
+from app.data.cache import ArticleCache
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -35,12 +39,19 @@ class BaseScraper(ABC):
             raise ConnectionError(f"Could not connect to {self.url}")
         return response.text
 
-#     def _save_articles(self, list[Article], db_connector):
-#        for article in list[Article]:
-#           db_connector.save_article(article)
+    @staticmethod
+    def _save_articles(articles: list[Article], cache: ArticleCache, db_connector) -> None:
+        unique_articles = cache.validate_if_in_cache(articles)
+        for article in unique_articles:
+            db_connector.save_article(article)
+
+    @staticmethod
+    def _get_bs_soup(content: str):
+        return BeautifulSoup(content, 'html.parser')
 
     @abstractmethod
     def _parse_articles(self, content: str) -> list[Article]:
-    """returns combinations of article url and header parsing the main website of the news server,
-    store in Article object
-    """
+        """
+        returns combinations of article url and header parsing the main website of the news server,
+        store in Article object
+        """
