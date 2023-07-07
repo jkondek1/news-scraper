@@ -21,7 +21,7 @@ class Keywords:
     def _get_keywords(self, text: str) -> set[str]:
         detected_lang = self._get_language_setting(text)
         text = re.sub('[.|,|!|?|:|;|\'|\"]', ' ', text)
-        tokens = [tok for tok in text.split(' ') if tok != '']
+        tokens = [tok.lower() for tok in text.split(' ') if tok != '']
         if detected_lang:
             keywords = [simplemma.lemmatize(tok, lang=detected_lang) for tok in tokens]
         else:
