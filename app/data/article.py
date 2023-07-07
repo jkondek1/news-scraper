@@ -26,7 +26,7 @@ class Article(Base):
     keywords = relationship('Keyword', back_populates='article')
 
     @hybrid_property
-    def keywords(self) -> list:
+    def keywords(self) -> set:
         return self._get_keywords()
 
     def _get_keywords(self, text: str) -> set[str]:
