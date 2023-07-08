@@ -1,3 +1,4 @@
+import logging
 import re
 from datetime import datetime
 
@@ -13,6 +14,7 @@ class SmeScraper(BaseScraper):
         super().__init__(url)
 
     def _parse_articles(self, content: str) -> list[Article]:
+        logger.info('parsing articles')
         articles = []
         soup = self._get_bs_soup(content)
         subsections = self._get_subsection_list(soup)
