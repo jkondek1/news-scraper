@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from app.data import Article
 from app.data.cache import ArticleCache
+from app.database.database_handler import DatabaseHandler
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -28,10 +29,10 @@ class BaseScraper(ABC):
             logger.info('url fixed')
         return url
 
-    def scrape_articles(self) -> None:
+    def scrape_articles(self, cache, db_handler) -> None:
         content = self._download_website_content()
         articles = self._parse_articles(content)
-        self._save_articles(articles)
+        self._save_articles(articles=articles, cache=cache, db_handler=db_handler)
 
     def _download_website_content(self):
         response = requests.get(self.url)
@@ -39,11 +40,16 @@ class BaseScraper(ABC):
             raise ConnectionError(f"Could not connect to {self.url}")
         return response.text
 
-    @staticmethod
-    def _save_articles(articles: list[Article], cache: ArticleCache, db_connector) -> None:
+    def _save_articles(self, articles: list[Article], cache: ArticleCache, db_handler: DatabaseHandler) -> None:
         unique_articles = cache.validate_if_in_cache(articles)
-        for article in unique_articles:
-            db_connector.save_article(article)
+        db_handler.connect()
+        db_handler.add_to_db(unique_articles)
+        self._save_keywords(unique_articles)
+
+    @staticmethod
+    def _save_keywords(articles: list[Article], db_handler: DatabaseHandler):
+        for article in articles:
+            db_handler.add_to_db(article.keywords)
 
     @staticmethod
     def _get_bs_soup(content: str):
