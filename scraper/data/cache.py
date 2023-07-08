@@ -28,10 +28,12 @@ class ArticleCache:
 
     def validate_if_in_cache(self, articles: list[Article]) -> list[Article]:
         """Checks if articles are already in cache, returns list of articles not in cache."""
+        logger.info('validating if articles are already in cache')
         articles_not_in_cache = []
         for article in articles:
             if article.url not in self.cache:
                 articles_not_in_cache.append(article)
+        logger.info(f'{len(articles_not_in_cache)} new articles parsed')
         return articles_not_in_cache
 
     def _delete_day_old_articles(self):
