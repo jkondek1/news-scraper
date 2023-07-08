@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 
 from app.data import Article
-from app.data.keywords import Keywords
+from app.data.keyword import Keyword
 from app.scrapers.base_scraper import BaseScraper
 
 
@@ -27,4 +27,4 @@ class SmeScraper(BaseScraper):
     def _get_article_objects(section):
         heading = re.search(r'<a[^>]+>([^<]+)</a>', str(section)).group(1)
         url = re.search('href="(.+)">?', str(section)).group(1)
-        return Article(heading, url, datetime.now(), Keywords(heading))
+        return Article(heading, url, datetime.now(), Keyword(heading))
