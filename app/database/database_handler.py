@@ -1,8 +1,15 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from app.data import Article
+from app.data.keyword import Keyword
+
 
 class DatabaseHandler:
+    """
+    TODO user management
+    """
+
     def __init__(self, db_url):
         self.db_url = db_url
         self.engine = None
@@ -22,3 +29,18 @@ class DatabaseHandler:
             self.engine.dispose()
             self.engine = None
             self.Session = None
+
+    def add_to_db(self, sql_objects: list):
+        objects = []
+        for obj in sql_objects:
+            self.session.add(obj)
+            objects.append(obj)
+            self.session.commit()
+            return objects
+
+    @staticmethod
+    def query_by_keyword(session, keyword):
+        # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
+        # TODO and make up for imprecise keywords
+        results = session.query(Keyword).join(Article).filter(Keyword.keyword == keyword).all()
+        return results
