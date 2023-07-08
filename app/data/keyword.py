@@ -12,7 +12,7 @@ class Keyword:
     """Represents a set of keywords."""
     __tablename__ = 'keywords'
 
-    id: int = Column(Integer, primary_key=True)
+    id: int = Column(Integer, primary_key=True, autoincrement=True)
     url: str = Column(String)
     keyword: str = Column(String)
     article = relationship('Article', back_populates='keywords')

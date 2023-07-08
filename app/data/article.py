@@ -9,6 +9,8 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_base, relationship
 
+from app.data.keyword import Keyword
+
 Base = declarative_base()
 
 logger = logging.getLogger(__name__)
@@ -20,14 +22,15 @@ LANGUAGES = ['sk', 'cs', 'en']
 class Article(Base):
     __tablename__ = 'articles'
     """Represents an article from a news server."""
-    header: str = Column(String, primary_key=True)
-    url: str = Column(String)
+    url: str = Column(String, primary_key=True)
+    header: str = Column(String)
     timestamp: datetime = Column(DateTime, default=datetime.utcnow)
     keywords = relationship('Keyword', back_populates='article')
 
     @hybrid_property
-    def keywords(self) -> set:
-        return self._get_keywords()
+    def keywords(self) -> list[Keyword]:
+        keywords = self._get_keywords(self.header)
+        return self._create_keyword_instances(keywords)
 
     def _get_keywords(self, text: str) -> set[str]:
         detected_lang = self._get_language_setting(text)
@@ -46,3 +49,9 @@ class Article(Base):
         if lang not in valid_languages:
             return None
         return lang
+
+    def _create_keyword_instances(self, keywords: list[str]) -> list[Keyword]:
+        kw_objects = []
+        for kw in keywords:
+            kw_objects.append(Keyword(url=self.url, keyword=kw))
+        return kw_objects
