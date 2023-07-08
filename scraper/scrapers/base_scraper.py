@@ -5,9 +5,9 @@ import requests
 import validators
 from bs4 import BeautifulSoup
 
-from app.data import Article
-from app.data.cache import ArticleCache
-from app.database.database_handler import DatabaseHandler
+from scraper.data import Article
+from scraper.data.cache import ArticleCache
+from scraper.database.database_handler import DatabaseHandler
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)

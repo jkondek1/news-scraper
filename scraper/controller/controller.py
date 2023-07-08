@@ -1,8 +1,12 @@
+import logging
+
 import schedule
 
-from app.data.cache import ArticleCache
-from app.database.database_handler import DatabaseHandler
-from app.scrapers.base_scraper import BaseScraper
+from scraper.data.cache import ArticleCache
+from scraper.database.database_handler import DatabaseHandler
+from scraper.scrapers.base_scraper import BaseScraper
+
+logger = logging.getLogger(__name__)
 
 
 class Controller:

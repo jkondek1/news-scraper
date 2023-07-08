@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta, datetime
 
-from app.data import Article
+from scraper.data import Article
 
 logger = logging.getLogger(__name__)
 

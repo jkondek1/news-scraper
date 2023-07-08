@@ -9,7 +9,7 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import declarative_base, relationship
 
-from app.data.keyword import Keyword
+from scraper.data.keyword import Keyword
 
 Base = declarative_base()
 

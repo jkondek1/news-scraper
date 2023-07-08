@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.data import Article
-from app.data.keyword import Keyword
+from scraper.data import Article
+from scraper.data.keyword import Keyword
 
 
 class DatabaseHandler:

@@ -1,12 +1,12 @@
 import re
 from datetime import datetime
 
-from app.data import Article
-from app.data.keyword import Keyword
-from app.scrapers.base_scraper import BaseScraper
+from scraper.data import Article
+from scraper.data.keyword import Keyword
+from scraper.scrapers.base_scraper import BaseScraper
 
 
-class SmeScraper(BaseScraper):
+class HnScraper(BaseScraper):
     def __init__(self, url: str):
         super().__init__(url)
 
@@ -20,11 +20,11 @@ class SmeScraper(BaseScraper):
 
     @staticmethod
     def _get_subsection_list(soup):
-        subsections = soup.find_all("h2", {"class": "media-heading"})
+        subsections = soup.find_all("div", {'class', 'article-box'})
         return subsections
 
     @staticmethod
     def _get_article_objects(section):
         heading = re.search(r'<a[^>]+>([^<]+)</a>', str(section)).group(1)
-        url = re.search('href="(.+)">?', str(section)).group(1)
+        url = 'https:' + re.search('href="(.+)">?', str(section)).group(1)
         return Article(heading, url, datetime.now(), Keyword(heading))
