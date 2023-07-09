@@ -2,6 +2,7 @@ import logging
 from abc import ABC, abstractmethod
 
 import requests
+import sqlalchemy
 import validators
 from bs4 import BeautifulSoup
 
@@ -15,9 +16,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 class BaseScraper(ABC):
     """Base class for news scrapers."""
-
-    def __init__(self, url: str):
-        self.url = self.set_url(url)
 
     @staticmethod
     def set_url(url: str) -> str:
@@ -46,10 +44,13 @@ class BaseScraper(ABC):
         logger.info('storing articles ...')
         unique_articles = cache.validate_if_in_cache(articles)
         if unique_articles:
-            db_handler.connect()
-            logger.info('inserting articles to database')
-            db_handler.add_to_db(unique_articles)
-            self._save_keywords(unique_articles)
+            try:
+                db_handler.connect()
+                logger.info('inserting articles to database')
+                db_handler.add_to_db(unique_articles)
+                self._save_keywords(unique_articles)
+            except sqlalchemy.exc.ArgumentError:
+                logger.error('db connection failed, storing only in cache')
             cache.fill(unique_articles)
 
     @staticmethod
