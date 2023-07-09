@@ -25,6 +25,7 @@ class ArticleCache:
         for article in articles:
             self.cache[article.url] = article
         logger.info(f'{len(articles)} articles added to cache')
+        logger.info(f'total number of articles in cache: {len(self.cache)}')
 
     def validate_if_in_cache(self, articles: list[Article]) -> list[Article]:
         """Checks if articles are already in cache, returns list of articles not in cache."""
