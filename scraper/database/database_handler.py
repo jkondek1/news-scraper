@@ -36,7 +36,6 @@ class DatabaseHandler:
             self.session.add(obj)
             objects.append(obj)
             self.session.commit()
-            return objects
 
     @staticmethod
     def query_by_keyword(session, keyword):
