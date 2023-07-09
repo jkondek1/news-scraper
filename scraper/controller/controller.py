@@ -1,4 +1,5 @@
 import logging
+import time
 
 import schedule
 
@@ -16,9 +17,14 @@ class Controller:
         self.scrapers = scrapers
         self.cache = cache
 
-    def run_schedule(self, interval_min: int = 1):
+    def run_scheduled(self, interval_min: int = 1):
+        logger.info('running...')
         schedule.every(interval_min).minutes.do(self._run_scrapers)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
     def _run_scrapers(self):
+        logger.info('starting scheduled scraping ...')
         for scraper in self.scrapers:
-            scraper.scrape_articles(db_handler=self.db)
+            scraper.scrape_articles(db_handler=self.db, cache=self.cache)
