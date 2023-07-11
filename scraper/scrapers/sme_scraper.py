@@ -3,15 +3,13 @@ import re
 from datetime import datetime
 
 from scraper.data import Article
-from scraper.data.keyword import Keyword
 from scraper.scrapers.base_scraper import BaseScraper
 
 logger = logging.getLogger()
 
 
 class SmeScraper(BaseScraper):
-    def __init__(self, url: str):
-        super().__init__(url)
+    url = 'https://www.sme.sk'
 
     def _parse_articles(self, content: str) -> list[Article]:
         logger.info('parsing articles')
@@ -31,4 +29,4 @@ class SmeScraper(BaseScraper):
     def _get_article_objects(section):
         heading = re.search(r'<a[^>]+>([^<]+)</a>', str(section)).group(1)
         url = re.search('href="(.+)">?', str(section)).group(1)
-        return Article(heading, url, datetime.now(), Keyword(heading))
+        return Article(url=url, header=heading, timestamp=datetime.now())
