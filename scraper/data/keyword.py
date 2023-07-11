@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from sqlalchemy import String, Column, Integer
 from sqlalchemy.orm import relationship
 
-from scraper.data.article import Base
+from scraper.data.sql_base import Base
 
 logger = logging.getLogger(__name__)
 

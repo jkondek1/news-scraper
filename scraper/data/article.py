@@ -7,11 +7,10 @@ import simplemma
 from langdetect import detect
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
 
 from scraper.data.keyword import Keyword
-
-Base = declarative_base()
+from scraper.data.sql_base import Base
 
 logger = logging.getLogger(__name__)
 
