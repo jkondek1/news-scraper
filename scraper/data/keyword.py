@@ -4,11 +4,13 @@ from dataclasses import dataclass
 from sqlalchemy import String, Column, Integer
 from sqlalchemy.orm import relationship
 
+from scraper.data.article import Base
+
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Keyword:
+class Keyword(Base):
     """Represents a set of keywords."""
     __tablename__ = 'keywords'
 
