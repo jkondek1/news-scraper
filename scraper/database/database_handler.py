@@ -23,7 +23,7 @@ class DatabaseHandler:
 
     def connect(self):
         self.engine = create_engine(self.db_url)
-        Base.metadata.create_all(bind=self.engine)
+        Base.metadata.create_all(bind=self.engine, checkfirst=True)
         self.Session = sessionmaker(bind=self.engine)
 
     def get_session(self):
