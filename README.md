@@ -16,6 +16,7 @@
 - unit tests are not written
 - db connection is hard coded in app.py
 - more robust db error handling (f.e. in case db connection is lost after engine creation)
+- CICD - github actions implementation
 
 ## Bugs
 
