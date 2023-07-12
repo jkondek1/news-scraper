@@ -17,6 +17,15 @@ Bugs
 
 - before 1st api call, parser needs to run at least once
 
+Extension ideas (ordered by importance)
+
+- add user management to database handler
+- semantic search of keywords (e.g. "ukrajina" should also find "ukrajinec"), using word2vec or some transformer model
+- keyword typos correction (e.g. "ukrajina" should also find "ukrajna") - compare query with existing keywords and if
+  similarity is high, use the existing keyword
+- add user management to webservice
+- simple GUI for data querying
+
 Requirements:
 
 - Python 3.10+, `pip`
