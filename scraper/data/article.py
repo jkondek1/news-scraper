@@ -7,7 +7,6 @@ import simplemma
 from langdetect import detect
 from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
 
 from scraper.data.keyword import Keyword
 from scraper.data.sql_base import Base
@@ -24,7 +23,6 @@ class Article(Base):
     url: str = Column(String, primary_key=True)
     header: str = Column(String)
     timestamp: datetime = Column(DateTime, default=datetime.utcnow)
-    keywords = relationship('Keyword', back_populates='article')
 
     @hybrid_property
     def keywords(self) -> list[Keyword]:
@@ -36,7 +34,7 @@ class Article(Base):
         text = re.sub('[.|,|!|?|:|;|\'|\"]', ' ', text)
         tokens = [tok.lower() for tok in text.split(' ') if tok != '']
         if detected_lang:
-            keywords = [simplemma.lemmatize(tok, lang=detected_lang) for tok in tokens]
+            keywords = [simplemma.lemmatize(tok, lang=detected_lang).lower() for tok in tokens]
         else:
             logger.info('valid language not detected, not lematizing tokens')
             keywords = tokens
