@@ -1,8 +1,7 @@
 import logging
 from dataclasses import dataclass
 
-from sqlalchemy import String, Column, Integer
-from sqlalchemy.orm import relationship
+from sqlalchemy import String, Column, Integer, ForeignKey
 
 from scraper.data.sql_base import Base
 
@@ -15,6 +14,5 @@ class Keyword(Base):
     __tablename__ = 'keywords'
 
     id: int = Column(Integer, primary_key=True, autoincrement=True)
-    url: str = Column(String)
+    url: str = Column(String, ForeignKey('articles.url'))
     keyword: str = Column(String)
-    article = relationship('Article', back_populates='keywords')
