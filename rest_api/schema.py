@@ -11,8 +11,10 @@ class KeywordRequest(BaseModel):
         lowered = []
         for kw in kw_list:
             if not isinstance(kw, str):
-                raise TypeError('keyword is not of type string')
-            if re.search('[^a-z]+', kw):
-                raise ValueError('keyword contains invalid characters')
-            lowered.append(kw.lower())
+                raise ValueError('keyword is not of type string')
+            kw_decap = kw.lower()
+            match = re.search(r'\W+', kw_decap)
+            if match:
+                raise ValueError(f'keyword contains invalid characters: {match.group()}')
+            lowered.append(kw_decap)
         return lowered
