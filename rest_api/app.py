@@ -2,7 +2,9 @@ import logging
 import threading
 
 from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
 
+from rest_api.schema import KeywordRequest
 from scraper.controller.controller import Controller
 from scraper.data.cache import ArticleCache
 from scraper.database.database_handler import DatabaseHandler
@@ -14,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-database_handler = DatabaseHandler('postgresql://localhost:5432/postgres')
+database_handler = DatabaseHandler('postgresql://localhost:5432/news')
 scrapers = [HnScraper(), SmeScraper()]
 cache = ArticleCache()
 
@@ -30,5 +32,6 @@ def run_scraping_in_background():
 
 
 @app.get('/articles/find')
-def list_articles_by_keyword():
-    database_handler.query_by_keyword()
+def list_articles_by_keyword(request: KeywordRequest):
+    articles = database_handler.query_by_keyword(request.keywords)
+    return jsonable_encoder(articles)
