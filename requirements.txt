@@ -1,0 +1,11 @@
+validators
+requests
+bs4
+langdetect
+simplemma
+sqlalchemy
+schedule
+fastapi
+uvicorn
+psycopg2
+pydantic
