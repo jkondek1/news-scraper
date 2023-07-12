@@ -2,6 +2,8 @@ import logging
 import re
 from datetime import datetime
 
+from bs4 import BeautifulSoup
+
 from scraper.data import Article
 from scraper.scrapers.base_scraper import BaseScraper
 
@@ -20,12 +22,17 @@ class HnScraper(BaseScraper):
         return articles
 
     @staticmethod
-    def _get_subsection_list(soup):
+    def _get_subsection_list(soup) -> list[BeautifulSoup]:
+        """
+        get smaller subsections from the main page
+        :param soup: BeautifulSoup object containg parsed website content
+        :return: list of subsections
+        """
         subsections = soup.find_all("div", {'class', 'article-box'})
         return subsections
 
     @staticmethod
-    def _get_article_objects(section):
+    def _get_article_objects(section: BeautifulSoup) -> Article:
         heading = re.search(r'<a[^>]+>([^<]+)</a>', str(section)).group(1)
         url = 'https:' + re.search('href="(.+)">?', str(section)).group(1)
         return Article(url=url, header=heading, timestamp=datetime.now())

@@ -23,6 +23,9 @@ cache = ArticleCache()
 
 @app.on_event('startup')
 def run_scraping_in_background():
+    """
+    method invoking scheduled task
+    """
     controller = Controller(db_handler=database_handler,
                             scrapers=scrapers,
                             cache=cache)
@@ -33,5 +36,8 @@ def run_scraping_in_background():
 
 @app.get('/articles/find')
 def list_articles_by_keyword(request: KeywordRequest):
+    """
+    public method querying all articles relevant to some listed keywords
+    """
     articles = database_handler.query_by_keyword(request.keywords)
     return jsonable_encoder(articles)

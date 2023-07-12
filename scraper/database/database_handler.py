@@ -13,7 +13,8 @@ logger = logging.getLogger(__name__)
 
 class DatabaseHandler:
     """
-    TODO user management
+    Handles connection to the database, adding articles to it and querying data
+    TODO: user management
     """
 
     def __init__(self, db_url):
@@ -21,23 +22,27 @@ class DatabaseHandler:
         self.engine = None
         self.Session = None
 
-    def connect(self):
+    def connect(self) -> None:
         self.engine = create_engine(self.db_url)
         Base.metadata.create_all(bind=self.engine, checkfirst=True)
         self.Session = sessionmaker(bind=self.engine)
 
-    def get_session(self):
+    def get_session(self) -> sqlalchemy.orm.session.Session:
         if not self.engine or not self.Session:
             raise ValueError("You must connect to the database first.")
         return self.Session()
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         if self.engine:
             self.engine.dispose()
             self.engine = None
             self.Session = None
 
-    def add_to_db(self, sql_objects: list):
+    def add_to_db(self, sql_objects: list) -> None:
+        """
+        inserts objects into the respective database tables
+        :param sql_objects:
+        """
         session = self.get_session()
         for obj in sql_objects:
             session.add(obj)
@@ -46,7 +51,12 @@ class DatabaseHandler:
         except sqlalchemy.exc.IntegrityError:
             logger.error('data already in db, insert not successful')
 
-    def query_by_keyword(self, keywords: list):
+    def query_by_keyword(self, keywords: list[str]) -> list[Article]:
+        """
+        queries database for articles containing at least one of given keywords
+        :param keywords: validated list of strings to be found in the keyword table
+        :return: relevant article objects
+        """
         # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
         # TODO and make up for imprecise keywords
         ses = self.get_session()

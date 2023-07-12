@@ -16,7 +16,12 @@ logging.basicConfig(level=logging.DEBUG)
 class BaseScraper(ABC):
     """Base class for news scrapers."""
 
-    def scrape_articles(self, cache, db_handler) -> None:
+    def scrape_articles(self, cache: ArticleCache, db_handler: DatabaseHandler) -> None:
+        """
+        method orchestrating scraping process
+        :param cache: cache object serving as a temporary storage for articles
+        :param db_handler: database handler object
+        """
         logger.info(f'scraping using {self.__class__.__name__}')
         content = self._download_website_content()
         if content:
@@ -25,7 +30,11 @@ class BaseScraper(ABC):
         else:
             logger.info('no content parsed')
 
-    def _download_website_content(self):
+    def _download_website_content(self) -> str | None:
+        """
+        method downloading website content
+        :return: string containing website content or None if exception occurred
+        """
         logger.info('getting website content')
         try:
             response = requests.get(self.url)
@@ -37,6 +46,13 @@ class BaseScraper(ABC):
         return response.text
 
     def _save_articles(self, articles: list[Article], cache: ArticleCache, db_handler: DatabaseHandler) -> None:
+        """
+        method managing saving articles to cache and database
+        :param articles: article objects containing all relevant scraped data
+        :param cache: cache object serving as a temporary storage for articles
+        :param db_handler: database handler object
+        :return:
+        """
         logger.info('storing articles ...')
         unique_articles = cache.validate_if_in_cache(articles)
         if unique_articles:
@@ -51,12 +67,17 @@ class BaseScraper(ABC):
 
     @staticmethod
     def _save_keywords(articles: list[Article], db_handler: DatabaseHandler):
+        """
+        method saving keywords to database
+        :param articles: article objects containing all relevant scraped data
+        :param db_handler: database handler object
+        """
         logger.info('inserting keywords to database')
         for article in articles:
             db_handler.add_to_db(article.keywords)
 
     @staticmethod
-    def _get_bs_soup(content: str):
+    def _get_bs_soup(content: str) -> BeautifulSoup:
         return BeautifulSoup(content, 'html.parser')
 
     @abstractmethod
@@ -64,4 +85,5 @@ class BaseScraper(ABC):
         """
         returns combinations of article url and header parsing the main website of the news server,
         store in Article object
+        :param content: string containing website content
         """

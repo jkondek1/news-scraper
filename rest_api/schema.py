@@ -4,6 +4,9 @@ from pydantic import BaseModel, field_validator
 
 
 class KeywordRequest(BaseModel):
+    """
+    request class for api service
+    """
     keywords: list
 
     @field_validator('keywords')
