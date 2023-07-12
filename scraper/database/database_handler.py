@@ -1,6 +1,7 @@
 import logging
 
 import sqlalchemy
+from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -19,17 +20,21 @@ class DatabaseHandler:
 
     def __init__(self, db_url):
         self.db_url = db_url
-        self.engine = None
-        self.Session = None
+        self.engine = create_engine(db_url, echo=True)
+        self.Session = self.connect()
 
-    def connect(self) -> None:
-        self.engine = create_engine(self.db_url)
-        Base.metadata.create_all(bind=self.engine, checkfirst=True)
-        self.Session = sessionmaker(bind=self.engine)
+    def connect(self) -> sqlalchemy.orm.session.Session | None:
+        try:
+            Base.metadata.create_all(bind=self.engine, checkfirst=True)
+            ses = sessionmaker(bind=self.engine)
+        except sqlalchemy.exc.OperationalError:
+            logger.error('db connection failed')
+            ses = None
+        return ses
 
-    def get_session(self) -> sqlalchemy.orm.session.Session:
+    def get_session(self) -> sqlalchemy.orm.session.Session | None:
         if not self.engine or not self.Session:
-            raise ValueError("You must connect to the database first.")
+            return None
         return self.Session()
 
     def disconnect(self) -> None:
@@ -44,12 +49,15 @@ class DatabaseHandler:
         :param sql_objects:
         """
         session = self.get_session()
-        for obj in sql_objects:
-            session.add(obj)
-        try:
-            session.commit()
-        except sqlalchemy.exc.IntegrityError:
-            logger.error('data already in db, insert not successful')
+        if session:
+            for obj in sql_objects:
+                session.add(obj)
+            try:
+                session.commit()
+            except sqlalchemy.exc.IntegrityError:
+                logger.error('data already in db, insert not successful')
+        else:
+            logger.error('db connection failed')
 
     def query_by_keyword(self, keywords: list[str]) -> list[Article]:
         """
@@ -60,5 +68,8 @@ class DatabaseHandler:
         # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
         # TODO and make up for imprecise keywords
         ses = self.get_session()
-        results = ses.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
+        if ses:
+            results = ses.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
+        else:
+            raise HTTPException(status_code=503, detail="Database connection error")
         return results
