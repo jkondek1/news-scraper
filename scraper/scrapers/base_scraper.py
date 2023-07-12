@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 
 import requests
 import sqlalchemy
-import validators
 from bs4 import BeautifulSoup
 
 from scraper.data import Article
@@ -16,16 +15,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 class BaseScraper(ABC):
     """Base class for news scrapers."""
-
-    @staticmethod
-    def set_url(url: str) -> str:
-        if not validators.url(url):
-            logger.info('invalid url, trying to automatically fix by adding https:// ...')
-            url = 'https://' + url
-            if not validators.url(url):
-                raise ValueError("Invalid URL")
-            logger.info('url fixed')
-        return url
 
     def scrape_articles(self, cache, db_handler) -> None:
         logger.info(f'scraping using {self.__class__.__name__}')
