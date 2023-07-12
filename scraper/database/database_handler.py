@@ -1,9 +1,9 @@
 import logging
 
+import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from rest_api.schema import KeywordRequest
 from scraper.data import Article
 from scraper.data.article import Base
 from scraper.data.keyword import Keyword
@@ -40,15 +40,15 @@ class DatabaseHandler:
     def add_to_db(self, sql_objects: list):
         session = self.get_session()
         for obj in sql_objects:
-            try:
-                session.add(obj)
-            except:
-                logger.error('data already in db, insert not successful')
-        session.commit()
+            session.add(obj)
+        try:
+            session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            logger.error('data already in db, insert not successful')
 
-    @staticmethod
-    def query_by_keyword(session, request: KeywordRequest):
+    def query_by_keyword(self, keywords: list):
         # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
         # TODO and make up for imprecise keywords
-        results = session.query(Keyword).join(Article).filter(Keyword.keyword == keyword).all()
+        ses = self.get_session()
+        results = ses.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
         return results
