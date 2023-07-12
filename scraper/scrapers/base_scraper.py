@@ -30,14 +30,21 @@ class BaseScraper(ABC):
     def scrape_articles(self, cache, db_handler) -> None:
         logger.info(f'scraping using {self.__class__.__name__}')
         content = self._download_website_content()
-        articles = self._parse_articles(content)
-        self._save_articles(articles=articles, cache=cache, db_handler=db_handler)
+        if content:
+            articles = self._parse_articles(content)
+            self._save_articles(articles=articles, cache=cache, db_handler=db_handler)
+        else:
+            logger.info('no content parsed')
 
     def _download_website_content(self):
         logger.info('getting website content')
-        response = requests.get(self.url)
-        if response.status_code != 200:
-            raise ConnectionError(f"Could not connect to {self.url}")
+        try:
+            response = requests.get(self.url)
+            if response.status_code != 200:
+                logger.info(f'get request failed, status code:{response.status_code}')
+        except requests.exceptions.RequestException as e:
+            logger.error(f'an error occurred: {e}')
+            response.text = None
         return response.text
 
     def _save_articles(self, articles: list[Article], cache: ArticleCache, db_handler: DatabaseHandler) -> None:
@@ -48,7 +55,7 @@ class BaseScraper(ABC):
                 db_handler.connect()
                 logger.info('inserting articles to database')
                 db_handler.add_to_db(unique_articles)
-                self._save_keywords(unique_articles)
+                self._save_keywords(unique_articles, db_handler=db_handler)
             except sqlalchemy.exc.ArgumentError:
                 logger.error('db connection failed, storing only in cache')
             cache.fill(unique_articles)
