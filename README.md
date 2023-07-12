@@ -11,6 +11,7 @@ Missing
 
 - application (both webservice and db) is not dockerized yet
 - unit tests are not written
+- db connection is hard coded in app.py
 
 Bugs
 
@@ -20,6 +21,12 @@ Requirements:
 
 - Python 3.10+, `pip`
 - list of reqs in requirements.txt
+
+Example run:
+
+```
+uvicorn --host 0.0.0.0 --port 8080 --workers 1 rest_api.app:app 
+```
 
 Testing the REST API:
 
