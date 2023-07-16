@@ -7,5 +7,5 @@ sqlalchemy==2.0.18
 schedule==1.2.0
 fastapi==0.100.0
 uvicorn==0.22.0
-psycopg2==2.9.6
+psycopg2-binary==2.9.6
 pydantic==2.0.2
