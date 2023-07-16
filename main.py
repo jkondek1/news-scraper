@@ -69,5 +69,5 @@ def create_app(database_handler):
 if __name__ == "__main__":
     args = parser.parse_args()
     db_handler = DatabaseHandler(
-        db_url=create_db_url(args.db_user, args.db_password, args.db_, args.db_port, args.db_name))
+        db_url=create_db_url(args.db_user, args.db_password, args.db_host, args.db_port, args.db_name))
     uvicorn.run(create_app(db_handler), host=args.app_host, port=args.app_port, workers=args.app_workers)
