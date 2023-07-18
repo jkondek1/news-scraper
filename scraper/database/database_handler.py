@@ -57,7 +57,7 @@ class DatabaseHandler:
             except sqlalchemy.exc.IntegrityError:
                 logger.error('data already in db, insert not successful')
         else:
-            logger.error('db connection failed')
+            logger.error(f'db connection failed: attempted url: {self.db_url}')
 
     def query_by_keyword(self, keywords: list[str]) -> list[Article]:
         """
