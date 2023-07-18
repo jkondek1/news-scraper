@@ -71,7 +71,7 @@ class DatabaseHandler:
         # TODO and make up for imprecise keywords
         session = self.get_session(self.session_maker)
         if session:
-            results = self.session.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
+            results = session.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
         else:
             raise HTTPException(status_code=503, detail="Database connection error")
         session.close()

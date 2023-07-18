@@ -57,7 +57,6 @@ class BaseScraper(ABC):
         unique_articles = cache.validate_if_in_cache(articles)
         if unique_articles:
             try:
-                db_handler.connect()
                 logger.info('inserting articles to database')
                 db_handler.add_to_db(unique_articles)
                 self._save_keywords(unique_articles, db_handler=db_handler)
