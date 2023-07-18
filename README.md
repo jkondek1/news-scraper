@@ -6,15 +6,10 @@
   news portal
   the cache is always checked and only if any new articles are scraped, the insert to db is made
 - db contains 2 tables - articles and keywords connected via url
-- warning: FOR NOW, DB CONNECTION IS HARDCODED IN app.py -> for full functionality, application needs postgres db
-  called "news" running on port
-  5432, otherwise only cache is used and endpoint calls do not work
 
 ## Missing (not implemented yet)
 
-- application (both webservice and db) is not dockerized yet
 - unit tests are not written
-- db connection is hard coded in app.py
 - more robust db error handling (f.e. in case db connection is lost after engine creation)
 - CICD - github actions implementation
 
