@@ -1,5 +1,4 @@
-FROM python:3.10-slim-buster
-
+FROM python:3.10
 # Set working directory
 WORKDIR /app
 
@@ -13,7 +12,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 ENV APP_HOST '0.0.0.0'
 ENV APP_PORT 8080
 ENV APP_WORKERS 1
-ENV DB_HOST 'localhost'
+ENV DB_HOST 'db'
 ENV DB_PORT 5432
 ENV DB_USER 'postgres'
 ENV DB_PASSWORD 'postgres'

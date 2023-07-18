@@ -8,7 +8,7 @@ services:
     depends_on:
       - db  # Depend on the database service
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/news  # Set the PostgreSQL database URL for the FastAPI app
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/news  # Set the PostgreSQL database URL for the FastAPI app
     restart: always
 
   db: # Service for the PostgreSQL database
@@ -20,8 +20,8 @@ services:
       POSTGRES_PASSWORD: postgres  # Set the PostgreSQL password
       POSTGRES_DB: news  # Set the name of the PostgreSQL database
     volumes:
-      - pgdata:/var/lib/postgresql/data  # Mount volume for persistent data storage
+      - data:/data  # Mount volume for persistent data storage
     restart: always  # Always restart the container if it stops
 
 volumes: # Define named volumes to be used by services
-  pgdata:  # Volume for PostgreSQL data storage
+  data:  # Volume for PostgreSQL data storage
