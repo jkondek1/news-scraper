@@ -20,7 +20,7 @@ ENV DB_PASSWORD 'postgres'
 ENV DB_NAME 'news'
 
 # Expose the port the application will listen on
-EXPOSE APP_PORT
+EXPOSE $APP_PORT
 
 # Command to run the application using Uvicorn
 CMD ["sh","-c","python3 main.py --app_host $APP_HOST --app_port $APP_PORT --app_workers $APP_WORKERS --db_host $DB_HOST --db_port $DB_PORT --db_user $DB_USER --db_password $DB_PASSWORD --db_name $DB_NAME"]
