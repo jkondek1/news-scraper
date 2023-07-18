@@ -28,7 +28,7 @@ class DatabaseHandler:
             Base.metadata.create_all(bind=self.engine, checkfirst=True)
             ses = sessionmaker(bind=self.engine)
         except sqlalchemy.exc.OperationalError:
-            logger.error('db connection failed')
+            logger.error(f'db connection failed: attempted url: {self.db_url}')
             ses = None
         return ses
 
