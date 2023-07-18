@@ -21,7 +21,7 @@ class DatabaseHandler:
     def __init__(self, db_url):
         self.db_url = db_url
         self.engine = create_engine(db_url, echo=True)
-        self.Session = self.connect()
+        self.session_maker = self.connect()
 
     def connect(self) -> sqlalchemy.orm.session.Session | None:
         try:
@@ -32,23 +32,24 @@ class DatabaseHandler:
             ses = None
         return ses
 
-    def get_session(self) -> sqlalchemy.orm.session.Session | None:
-        if not self.engine or not self.Session:
+    @staticmethod
+    def get_session(session_factory) -> sqlalchemy.orm.session.Session | None:
+        if None:
             return None
-        return self.Session()
+        return session_factory()
 
     def disconnect(self) -> None:
         if self.engine:
             self.engine.dispose()
             self.engine = None
-            self.Session = None
+            self.session_maker = None
 
     def add_to_db(self, sql_objects: list) -> None:
         """
         inserts objects into the respective database tables
         :param sql_objects:
         """
-        session = self.get_session()
+        session = self.get_session(self.session_maker)
         if session:
             for obj in sql_objects:
                 session.add(obj)
@@ -56,8 +57,9 @@ class DatabaseHandler:
                 session.commit()
             except sqlalchemy.exc.IntegrityError:
                 logger.error('data already in db, insert not successful')
+            session.close()
         else:
-            logger.error('db connection failed')
+            logger.error(f'db connection failed: attempted url: {self.db_url}')
 
     def query_by_keyword(self, keywords: list[str]) -> list[Article]:
         """
@@ -67,9 +69,10 @@ class DatabaseHandler:
         """
         # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
         # TODO and make up for imprecise keywords
-        ses = self.get_session()
-        if ses:
-            results = ses.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
+        session = self.get_session(self.session_maker)
+        if session:
+            results = self.session.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
         else:
             raise HTTPException(status_code=503, detail="Database connection error")
+        session.close()
         return results
