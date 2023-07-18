@@ -1,4 +1,3 @@
-import argparse
 import logging
 import threading
 
@@ -12,19 +11,10 @@ from scraper.data.cache import ArticleCache
 from scraper.database.database_handler import DatabaseHandler
 from scraper.scrapers.hn_scraper import HnScraper
 from scraper.scrapers.sme_scraper import SmeScraper
+from utils.arg_parser import init_parser
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-parser = argparse.ArgumentParser()
-parser.add_argument('--app_host', default='0.0.0.0')
-parser.add_argument('--app_port', default=8080)
-parser.add_argument('--app_workers', default=1)
-parser.add_argument('--db_', default='localhost')
-parser.add_argument('--db_port', default=5432)
-parser.add_argument('--db_user', default='postgres')
-parser.add_argument('--db_password', default='posgres')
-parser.add_argument('--db_name', default='news')
 
 scrapers = [HnScraper(), SmeScraper()]
 cache = ArticleCache()
@@ -67,6 +57,7 @@ def create_app(database_handler):
 
 
 if __name__ == "__main__":
+    parser = init_parser()
     args = parser.parse_args()
     db_handler = DatabaseHandler(
         db_url=create_db_url(args.db_user, args.db_password, args.db_host, args.db_port, args.db_name))
