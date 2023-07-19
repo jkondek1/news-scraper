@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class DatabaseHandler:
     """
     Handles connection to the database, adding articles to it and querying data
-    TODO: user management
     """
 
     def __init__(self, db_url):
