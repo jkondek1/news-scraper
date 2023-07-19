@@ -21,35 +21,14 @@ class DatabaseHandler:
     def __init__(self, db_url):
         self.db_url = db_url
         self.engine = create_engine(db_url, echo=True)
-        self.session_maker = self.connect()
-
-    def connect(self) -> sqlalchemy.orm.session.Session | None:
-        try:
-            Base.metadata.create_all(bind=self.engine, checkfirst=True)
-            ses = sessionmaker(bind=self.engine)
-        except sqlalchemy.exc.OperationalError:
-            logger.error(f'db connection failed: attempted url: {self.db_url}')
-            ses = None
-        return ses
-
-    @staticmethod
-    def get_session(session_factory) -> sqlalchemy.orm.session.Session | None:
-        if None:
-            return None
-        return session_factory()
-
-    def disconnect(self) -> None:
-        if self.engine:
-            self.engine.dispose()
-            self.engine = None
-            self.session_maker = None
+        self.session_maker = self._connect()
 
     def add_to_db(self, sql_objects: list) -> None:
         """
         inserts objects into the respective database tables
         :param sql_objects:
         """
-        session = self.get_session(self.session_maker)
+        session = self._get_session(self.session_maker)
         if session:
             for obj in sql_objects:
                 session.add(obj)
@@ -69,10 +48,31 @@ class DatabaseHandler:
         """
         # TODO implement search of semantically similar keywords - to eliminate lemmatization issues
         # TODO and make up for imprecise keywords
-        session = self.get_session(self.session_maker)
+        session = self._get_session(self.session_maker)
         if session:
             results = session.query(Keyword).join(Article).filter(Keyword.keyword.in_(keywords)).all()
         else:
             raise HTTPException(status_code=503, detail="Database connection error")
         session.close()
         return results
+
+    def _connect(self) -> sqlalchemy.orm.session.Session | None:
+        try:
+            Base.metadata.create_all(bind=self.engine, checkfirst=True)
+            ses = sessionmaker(bind=self.engine)
+        except sqlalchemy.exc.OperationalError:
+            logger.error(f'db connection failed: attempted url: {self.db_url}')
+            ses = None
+        return ses
+
+    @staticmethod
+    def _get_session(session_factory) -> sqlalchemy.orm.session.Session | None:
+        if None:
+            return None
+        return session_factory()
+
+    def disconnect(self) -> None:
+        if self.engine:
+            self.engine.dispose()
+            self.engine = None
+            self.session_maker = None
