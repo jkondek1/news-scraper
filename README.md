@@ -34,7 +34,7 @@
 ## Example run:
 
 ```
-uvicorn --host 0.0.0.0 --port 8080 --workers 1 rest_api.app:app 
+python3 main.py
 ```
 
 ## Testing the REST API:
